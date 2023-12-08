@@ -49,5 +49,10 @@ agent_executor = AgentExecutor(
     tools=tools
 )
 
-agent_executor("What are the most popular products. Write the results to a report file.")
-# agent_executor("how many users are there?")
+agent_executor(
+    "How many orders are there? Write the results to a report file."
+    )
+
+agent_executor(
+    "Repeat exact same process for users."
+    )
