@@ -1,7 +1,7 @@
 import sqlite3
 from langchain.tools import Tool
 
-conncetion = sqlite3.conncet("db.sqlite")
+conncetion = sqlite3.connect("db.sqlite")
 
 def run_sqlite_query(query):
     c = conncetion.cursor()
@@ -9,7 +9,7 @@ def run_sqlite_query(query):
     return c.fetchall()
 
 # Tool
-run_query_toool = Tool.from_function(
+run_query_tool = Tool.from_function(
     name = "run_sqlite_query",
     description = "Run a sqlite query.",
     func = run_sqlite_query
