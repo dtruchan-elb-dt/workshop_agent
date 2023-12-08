@@ -4,26 +4,35 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
     MessagesPlaceholder
 )
+from langchain.schema import SystemMessage
 from langchain.agents import OpenAIFunctionsAgent, AgentExecutor
 from dotenv import load_dotenv
 
-from tools.sql import run_query_tool
+from tools.sql import run_query_tool, list_tables, describe_tables_tool
 
 
 load_dotenv()
 
 chat = ChatOpenAI()
 
-# Create a promt from human message (input)
-# Create a simple memory for the agent (agent_scratchpad)
+tables = list_tables()
 prompt = ChatPromptTemplate(
     messages=[
+        # System Message will tell gpt which tables are available
+        SystemMessage(content=(
+        "You are an AI that has access to a SQLite database.\n"
+        f"The database has tables of: {tables}\n"
+        "Do not make any assumptions about what tables exist"
+        "or what columns exist. Instead, use the 'describe_tables' function"
+        )),
+        # Human ´input´
         HumanMessagePromptTemplate.from_template("{input}"),
+        # Create simple memory for the agent
         MessagesPlaceholder(variable_name="agent_scratchpad")
     ]
 )
 
-tools = [run_query_tool]
+tools = [run_query_tool, describe_tables_tool]
 
 agent = OpenAIFunctionsAgent(
     llm=chat,
@@ -37,4 +46,5 @@ agent_executor = AgentExecutor(
     tools=tools
 )
 
-agent_executor("How many shipping addresses are in the database?")
+agent_executor("How many users have provided a shipping address?")
+# agent_executor("how many users are there?")
